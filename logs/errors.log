@@ -1,10 +1,13 @@
-Actualizar :curl -X PUT http://localhost:3000/api/usuarios/17 -H "x-auth-token: supersecreto" -H "Content-Type: application/json" -d "{\"nombre\": \"Mario Moreno\"}"
+Actualizar :curl -X PUT https://api-nodejs-pab6.onrender.com/api/usuarios/17 -H "x-auth-token: supersecreto" -H "Content-Type: application/json" -d "{\"nombre\": \"Mario Moreno\"}"
 
- crear :curl -X POST http://localhost:3000/api/usuarios ^
+ crear :curl -X POST https://api-nodejs-pab6.onrender.com/api/usuarios ^
   -H "Content-Type: application/json" ^
   -d "{\"nombre\": \"Pancho\", \"apellido\": \"López\", \"email\": \"pancho.lopez@example.com\"}"
 
-Borrar: curl -X DELETE http://localhost:3000/api/usuarios/17
+  curl -X GET https://api-nodejs-pab6.onrender.com/api/usuarios -H "x-auth-token: supersecreto"
+
+
+Borrar: curl -X DELETE https://api-nodejs-pab6.onrender.com/api/usuarios/17
 
     [2024-10-13T18:21:03.155Z] Error en la ruta: /api/usuarios
     Método: GET
