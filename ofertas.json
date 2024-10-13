@@ -1,0 +1,113 @@
+[
+    {
+      "id": 1,
+      "usuario_id": 1,
+      "titulo": "Cuidados Intensivos para Paciente en Casa",
+      "descripcion": "Servicios especializados para pacientes en estado crítico en el hogar.",
+      "tipo_cuidado": "domicilio",
+      "ubicacion": "Mérida, Yucatán",
+      "horario": "24 horas",
+      "salario": 300,
+      "estado": "Disponible"
+    },
+    {
+      "id": 2,
+      "usuario_id": 2,
+      "titulo": "Atención Geriátrica en Clínica",
+      "descripcion": "Servicios de atención geriátrica en una clínica especializada.",
+      "tipo_cuidado": "clínica",
+      "ubicacion": "Progreso, Yucatán",
+      "horario": "8:00 - 20:00",
+      "salario": 280,
+      "estado": "Disponible"
+    },
+    {
+      "id": 3,
+      "usuario_id": 3,
+      "titulo": "Cuidados Pediátricos para Niño en Casa",
+      "descripcion": "Atención y cuidado para niños en el hogar.",
+      "tipo_cuidado": "domicilio",
+      "ubicacion": "Kanasín, Yucatán",
+      "horario": "24 horas",
+      "salario": 250,
+      "estado": "Disponible"
+    },
+    {
+      "id": 4,
+      "usuario_id": 4,
+      "titulo": "Atención Intensiva para Paciente en Clínica",
+      "descripcion": "Servicios especializados para pacientes en estado crítico en una clínica.",
+      "tipo_cuidado": "clínica",
+      "ubicacion": "Tizimin, Yucatán",
+      "horario": "24 horas",
+      "salario": 300,
+      "estado": "Disponible"
+    },
+    {
+      "id": 5,
+      "usuario_id": 5,
+      "titulo": "Cuidados Geriátricos para Paciente en Casa",
+      "descripcion": "Atención y cuidados para pacientes mayores en el hogar.",
+      "tipo_cuidado": "domicilio",
+      "ubicacion": "Valladolid, Yucatán",
+      "horario": "24 horas",
+      "salario": 280,
+      "estado": "Disponible"
+    },
+    {
+      "id": 6,
+      "usuario_id": 6,
+      "titulo": "Cuidados Intensivos para Paciente en Clínica",
+      "descripcion": "Atención especializada para pacientes en estado crítico en una clínica.",
+      "tipo_cuidado": "clínica",
+      "ubicacion": "Motul, Yucatán",
+      "horario": "24 horas",
+      "salario": 300,
+      "estado": "Disponible"
+    },
+    {
+      "id": 7,
+      "usuario_id": 7,
+      "titulo": "Atención Geriátrica en Clínica",
+      "descripcion": "Cuidados especializados para pacientes mayores en una clínica.",
+      "tipo_cuidado": "clínica",
+      "ubicacion": "Celestún, Yucatán",
+      "horario": "8:00 - 20:00",
+      "salario": 280,
+      "estado": "Disponible"
+    },
+    {
+      "id": 8,
+      "usuario_id": 8,
+      "titulo": "Cuidados Intensivos para Paciente en Casa",
+      "descripcion": "Atención especializada para pacientes en estado crítico en el hogar.",
+      "tipo_cuidado": "domicilio",
+      "ubicacion": "Dzidzantún, Yucatán",
+      "horario": "24 horas",
+      "salario": 300,
+      "estado": "Disponible"
+    },
+    {
+      "id": 9,
+      "usuario_id": 9,
+      "titulo": "Atención Pediátrica para Niño en Casa",
+      "descripcion": "Servicios de cuidado para niños en su hogar.",
+      "tipo_cuidado": "domicilio",
+      "ubicacion": "Caucel, Yucatán",
+      "horario": "24 horas",
+      "salario": 250,
+      "estado": "Disponible"
+    },
+    {
+      "id": 10,
+      "usuario_id": 10,
+      "titulo": "Atención Geriátrica en Clínica",
+      "descripcion": "Cuidados para pacientes mayores en una clínica.",
+      "tipo_cuidado": "clínica",
+      "ubicacion": "Mérida, Yucatán",
+      "horario": "8:00 - 20:00",
+      "salario": 280,
+      "estado": "Disponible"
+    }
+  ]
+  

@@ -1,0 +1,781 @@
+app.js:
+import express from 'express';
+import bodyParser from 'body-parser';
+import cors from 'cors'; // Importa CORS para permitir solicitudes entre diferentes orígenes
+import comentarioRoutes from './routes/comentarioRoutes.js';
+import enfermeroRoutes from './routes/enfermeroRoutes.js';
+import ofertaRoutes from './routes/ofertaRoutes.js';
+import postulacionRoutes from './routes/postulacionRoutes.js';
+import usuarioRoutes from './routes/usuarioRoutes.js';
+import applicationMiddleware from './middleware/applicationMiddleware.js';
+import errorMiddleware from './middleware/errorMiddleware.js';
+
+const app = express();
+
+// Habilitar CORS para permitir solicitudes entre diferentes dominios
+app.use(cors());
+
+// Middleware para servir archivos estáticos desde la carpeta "public"
+app.use(express.static('public'));
+
+// Middleware para parsear el cuerpo de las solicitudes en formato JSON
+app.use(bodyParser.json());
+
+// Aplicar middleware de aplicación
+app.use(applicationMiddleware);
+
+// Definir las rutas
+app.use('/api/comentarios', comentarioRoutes);
+app.use('/api/enfermeros', enfermeroRoutes);
+app.use('/api/ofertas', ofertaRoutes);
+app.use('/api/postulaciones', postulacionRoutes);
+app.use('/api/usuarios', usuarioRoutes);
+
+// Manejo de errores
+app.use(errorMiddleware);
+
+// Iniciar el servidor
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Servidor corriendo en http://localhost:${PORT}`);
+});
+routes\usuarioRoutes.js:
+import express from 'express';
+import usuarioController from '../controllers/usuarioController.js';
+
+const router = express.Router();
+
+// Rutas para usuarios
+router.get('/', usuarioController.getAllUsuarios); // Obtener todos los usuarios
+router.get('/:id', usuarioController.getUsuarioById); // Obtener usuario por ID
+router.post('/', usuarioController.addUsuario); // Crear un nuevo usuario
+router.put('/:id', usuarioController.updateUsuario); // Actualizar un usuario
+router.delete('/:id', usuarioController.deleteUsuario); // Eliminar un usuario
+
+export default router;
+routes\postulacionRoutes.js:
+import express from 'express';
+import postulacionController from '../controllers/postulacionController.js';
+
+const router = express.Router();
+
+// Rutas para postulaciones
+router.get('/', postulacionController.getAllPostulaciones); // Obtener todas las postulaciones
+router.get('/:id', postulacionController.getPostulacionById); // Obtener postulacion por ID
+router.post('/', postulacionController.addPostulacion); // Crear una nueva postulacion
+router.put('/:id', postulacionController.updatePostulacion); // Actualizar una postulacion
+router.delete('/:id', postulacionController.deletePostulacion); // Eliminar una postulacion
+
+export default router;
+routes\ofertaRoutes.js:
+import express from 'express';
+import ofertaController from '../controllers/ofertaController.js';
+
+const router = express.Router();
+
+// Rutas para ofertas
+router.get('/', ofertaController.getAllOfertas); // Obtener todas las ofertas
+router.get('/:id', ofertaController.getOfertaById); // Obtener oferta por ID
+router.post('/', ofertaController.addOferta); // Crear una nueva oferta
+router.put('/:id', ofertaController.updateOferta); // Actualizar una oferta
+router.delete('/:id', ofertaController.deleteOferta); // Eliminar una oferta
+
+export default router;
+routes\enfermeroRoutes.js:
+import express from 'express';
+import enfermeroController from '../controllers/enfermeroController.js';
+
+const router = express.Router();
+
+// Rutas para enfermeros
+router.get('/', enfermeroController.getAllEnfermeros); // Obtener todos los enfermeros
+router.get('/:id', enfermeroController.getEnfermeroById); // Obtener enfermero por ID
+router.post('/', enfermeroController.addEnfermero); // Crear un nuevo enfermero
+router.put('/:id', enfermeroController.updateEnfermero); // Actualizar un enfermero
+router.delete('/:id', enfermeroController.deleteEnfermero); // Eliminar un enfermero
+
+export default router;
+routes\comentarioRoutes.js:
+import express from 'express';
+import comentarioController from '../controllers/comentarioController.js';
+
+const router = express.Router();
+
+// Rutas para comentarios
+router.get('/', comentarioController.getAllComentarios); // Obtener todos los comentarios
+router.get('/:id', comentarioController.getComentarioById); // Obtener comentario por ID
+router.post('/', comentarioController.addComentario); // Crear un nuevo comentario
+router.put('/:id', comentarioController.updateComentario); // Actualizar un comentario
+router.delete('/:id', comentarioController.deleteComentario); // Eliminar un comentario
+
+export default router;
+repositories\usuarioRepository.js:
+import fs from 'fs-extra';
+import Usuario from '../models/usuarioModel.js';
+
+const filePath = './usuarios.json';
+
+async function getUsuarios() {
+  try {
+    const data = await fs.readJson(filePath);
+    return data.map(u => new Usuario(u.id, u.nombre, u.email, u.contraseña, u.direccion, u.telefono));
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function saveUsuarios(usuarios) {
+  try {
+    await fs.writeJson(filePath, usuarios);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export default {
+  getUsuarios,
+  saveUsuarios
+};
+repositories\postulacionRepository.js:
+import fs from 'fs-extra';
+import Postulacion from '../models/postulacionModel.js';
+
+const filePath = './postulaciones.json';
+
+async function getPostulaciones() {
+  try {
+    const data = await fs.readJson(filePath);
+    return data.map(p => new Postulacion(p.id, p.oferta_id, p.enfermero_id, p.estado));
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function savePostulaciones(postulaciones) {
+  try {
+    await fs.writeJson(filePath, postulaciones);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export default {
+  getPostulaciones,
+  savePostulaciones
+};
+repositories\ofertaRepository.js:
+import fs from 'fs-extra';
+import Oferta from '../models/ofertaModel.js';
+
+const filePath = './ofertas.json';
+
+async function getOfertas() {
+  try {
+    const data = await fs.readJson(filePath);
+    return data.map(o => new Oferta(o.id, o.usuario_id, o.titulo, o.descripcion, o.tipo_cuidado, o.ubicacion, o.horario, o.salario, o.estado));
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function saveOfertas(ofertas) {
+  try {
+    await fs.writeJson(filePath, ofertas);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export default {
+  getOfertas,
+  saveOfertas
+};
+repositories\enfermeroRepository.js:
+import fs from 'fs-extra';
+import Enfermero from '../models/enfermeroModel.js';
+
+const filePath = './enfermeros.json';
+
+async function getEnfermeros() {
+  try {
+    const data = await fs.readJson(filePath);
+    return data.map(e => new Enfermero(e.id, e.nombre, e.email, e.certificaciones, e.experiencia, e.telefono, e.especialidad));
+  } catch (error) {
+    console.error(error);
+    return []; // Devolver un array vacío si ocurre un error
+  }
+}
+
+async function saveEnfermeros(enfermeros) {
+  try {
+    await fs.writeJson(filePath, enfermeros);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export default {
+  getEnfermeros,
+  saveEnfermeros
+};
+repositories\comentarioRepository.js:
+import fs from 'fs-extra';
+import Comentario from '../models/comentarioModel.js';
+
+const filePath = './comentarios.json';
+
+async function getComentarios() {
+  try {
+    const data = await fs.readJson(filePath);
+    return data.map(c => new Comentario(c.id, c.oferta_id, c.enfermero_id, c.puntuacion, c.comentario));
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function saveComentarios(comentarios) {
+  try {
+    await fs.writeJson(filePath, comentarios);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export default {
+  getComentarios,
+  saveComentarios
+};
+middleware\routingMiddleware.js:
+// Middleware para manejar el enrutamiento específico
+const routingMiddleware = (req, res, next) => {
+    // Log de la URL y el método de la solicitud
+    console.log(`Enrutando a ${req.method} ${req.url}`);
+
+    // Manejo de rutas no definidas
+    const validRoutes = [
+        '/api/usuarios',
+        '/api/enfermeros',
+        '/api/ofertas',
+        '/api/postulaciones'
+    ];
+    
+    const validRoutePattern = /^\/api\/usuarios\/\d+$/; // Acepta rutas de usuarios con ID
+    
+    // Verifica si la ruta solicitada es válida
+    if (!validRoutes.includes(req.path) && !validRoutePattern.test(req.path)) {
+        const error = new Error('Ruta no encontrada');
+        error.status = 404; // Establece el estado 404
+        return next(error); // Llama al siguiente middleware de error
+    }
+    
+    // Continuar con la siguiente función de middleware
+    next();
+};
+
+export default routingMiddleware;
+middleware\errorMiddleware.js:
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const errorMiddleware = (err, req, res, next) => {
+    const reset = "\x1b[0m"; // Reset color
+    const green = "\x1b[32m"; // Verde
+    const yellow = "\x1b[33m"; // Amarillo
+    const red = "\x1b[31m"; // Rojo
+
+    // Loggear el error con detalles
+    const errorLogPath = path.join(__dirname, '../logs/errors.log');
+    const errorDetails = `
+    [${new Date().toISOString()}] Error en la ruta: ${req.url}
+    Método: ${req.method}
+    Cuerpo de la solicitud: ${JSON.stringify(req.body)}
+    Error: ${err.message}
+    Stack: ${err.stack}\n`;
+
+    // Registrar el error en un archivo de log
+    fs.appendFile(errorLogPath, errorDetails, (fileErr) => {
+        if (fileErr) console.error('Error al escribir en el archivo de log:', fileErr);
+    });
+
+    // Responder según el tipo de error
+    if (err.status === 404) {
+        console.log(`${yellow}Error 404: Recurso no encontrado${reset}`);
+        return res.status(404).json({ error: 'Recurso no encontrado', message: err.message || 'La ruta solicitada no existe.' });
+    } else if (err.status === 401) {
+        console.log(`${yellow}Error 401: Acceso no autorizado${reset}`);
+        return res.status(401).json({ error: 'Acceso no autorizado', message: err.message || 'No tienes permiso para acceder a este recurso.' });
+    }
+
+    // Mostrar un mensaje más detallado si estamos en desarrollo
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    if (isDevelopment) {
+        console.log(`${red}Error 500: Ocurrió un error en el servidor${reset}`);
+        return res.status(500).json({
+            error: 'Ocurrió un error en el servidor',
+            message: err.message,
+            stack: err.stack // Incluir el stacktrace para depurar
+        });
+    }
+
+    // Respuesta más general en producción
+    console.log(`${red}Error 500: Ocurrió un error en el servidor${reset}`);
+    res.status(500).json({
+        error: 'Ocurrió un error en el servidor',
+        message: 'Algo salió mal, por favor inténtalo más tarde.'
+    });
+};
+
+export default errorMiddleware;
+middleware\applicationMiddleware.js:
+const applicationMiddleware = (req, res, next) => {
+    // 1. Logging de solicitudes con colores
+    const reset = "\x1b[0m"; // Reset color
+    const green = "\x1b[32m"; // Verde
+    const yellow = "\x1b[33m"; // Amarillo
+    const red = "\x1b[31m"; // Rojo
+
+    console.log(`[${new Date().toISOString()}] Método: ${req.method}, URL: ${req.url}`);
+
+    // 2. Verificar encabezados comunes
+    if (!req.headers['x-auth-token']) {
+        console.warn(`${yellow}Advertencia: Falta el encabezado "x-auth-token"${reset}`);
+    } else {
+        console.log('Encabezado de autenticación presente');
+    }
+
+    // 3. Autenticación básica
+    const authToken = req.headers['x-auth-token'];
+    if (authToken === 'supersecreto') {
+        console.log('Autenticación exitosa');
+    } else {
+        const error = new Error('Token inválido');
+        error.status = 401; // Establecer el estado del error
+        return next(error); // Pasar el error al middleware de manejo de errores
+    }
+
+    // 4. Registrar el tiempo de procesamiento de la solicitud
+    const start = Date.now();
+    res.on('finish', () => {
+        const elapsedTime = Date.now() - start;
+        const statusColor = res.statusCode >= 500 ? red : (res.statusCode >= 400 ? yellow : green);
+
+        // Registra el estado en los logs
+        if (res.statusCode === 200) {
+            console.log(`${green}Exitoso: Tiempo de respuesta: ${elapsedTime} ms${reset} - Estado: ${res.statusCode}`);
+        } else {
+            console.log(`${statusColor}Tiempo de respuesta: ${elapsedTime} ms - Estado: ${res.statusCode}${reset}`);
+        }
+    });
+
+    // Continuar con la solicitud
+    next();
+};
+
+export default applicationMiddleware;
+middleware\errorMiddleware.js:
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const errorMiddleware = (err, req, res, next) => {
+    const reset = "\x1b[0m"; // Reset color
+    const green = "\x1b[32m"; // Verde
+    const yellow = "\x1b[33m"; // Amarillo
+    const red = "\x1b[31m"; // Rojo
+
+    // Loggear el error con detalles
+    const errorLogPath = path.join(__dirname, '../logs/errors.log');
+    const errorDetails = `
+    [${new Date().toISOString()}] Error en la ruta: ${req.url}
+    Método: ${req.method}
+    Cuerpo de la solicitud: ${JSON.stringify(req.body)}
+    Error: ${err.message}
+    Stack: ${err.stack}\n`;
+
+    // Registrar el error en un archivo de log
+    fs.appendFile(errorLogPath, errorDetails, (fileErr) => {
+        if (fileErr) console.error('Error al escribir en el archivo de log:', fileErr);
+    });
+
+    // Responder según el tipo de error
+    if (err.status === 404) {
+        console.log(`${yellow}Error 404: Recurso no encontrado${reset}`);
+        return res.status(404).json({ error: 'Recurso no encontrado', message: err.message || 'La ruta solicitada no existe.' });
+    } else if (err.status === 401) {
+        console.log(`${yellow}Error 401: Acceso no autorizado${reset}`);
+        return res.status(401).json({ error: 'Acceso no autorizado', message: err.message || 'No tienes permiso para acceder a este recurso.' });
+    }
+
+    // Mostrar un mensaje más detallado si estamos en desarrollo
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    if (isDevelopment) {
+        console.log(`${red}Error 500: Ocurrió un error en el servidor${reset}`);
+        return res.status(500).json({
+            error: 'Ocurrió un error en el servidor',
+            message: err.message,
+            stack: err.stack // Incluir el stacktrace para depurar
+        });
+    }
+
+    // Respuesta más general en producción
+    console.log(`${red}Error 500: Ocurrió un error en el servidor${reset}`);
+    res.status(500).json({
+        error: 'Ocurrió un error en el servidor',
+        message: 'Algo salió mal, por favor inténtalo más tarde.'
+    });
+};
+
+export default errorMiddleware;
+middleware\routingMiddleware.js:
+// Middleware para manejar el enrutamiento específico
+const routingMiddleware = (req, res, next) => {
+    // Log de la URL y el método de la solicitud
+    console.log(`Enrutando a ${req.method} ${req.url}`);
+
+    // Manejo de rutas no definidas
+    const validRoutes = [
+        '/api/usuarios',
+        '/api/enfermeros',
+        '/api/ofertas',
+        '/api/postulaciones'
+    ];
+    
+    const validRoutePattern = /^\/api\/usuarios\/\d+$/; // Acepta rutas de usuarios con ID
+    
+    // Verifica si la ruta solicitada es válida
+    if (!validRoutes.includes(req.path) && !validRoutePattern.test(req.path)) {
+        const error = new Error('Ruta no encontrada');
+        error.status = 404; // Establece el estado 404
+        return next(error); // Llama al siguiente middleware de error
+    }
+    
+    // Continuar con la siguiente función de middleware
+    next();
+};
+
+export default routingMiddleware;
+controllers\usuarioController.js:
+import usuarioService from '../services/usuarioService.js';
+
+async function getAllUsuarios(req, res) {
+  try {
+    const usuarios = await usuarioService.getAllUsuarios();
+    res.status(200).json(usuarios);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+async function getUsuarioById(req, res) {
+  const { id } = req.params;
+  try {
+    const usuario = await usuarioService.getUsuarioById(Number(id));
+    if (!usuario) {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+    res.status(200).json(usuario);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+async function addUsuario(req, res) {
+  const usuario = req.body;
+  try {
+    const newUsuario = await usuarioService.addUsuario(usuario);
+    res.status(201).json(newUsuario);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+async function updateUsuario(req, res) {
+  const { id } = req.params;
+  const updatedUsuario = req.body;
+  try {
+    const usuario = await usuarioService.updateUsuario(Number(id), updatedUsuario);
+    res.status(200).json(usuario);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+async function deleteUsuario(req, res) {
+  const { id } = req.params;
+  try {
+    await usuarioService.deleteUsuario(Number(id));
+    res.status(204).end();
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+export default {
+  getAllUsuarios,
+  getUsuarioById,
+  addUsuario,
+  updateUsuario,
+  deleteUsuario
+};
+controllers\postulacionController.js:
+import postulacionService from '../services/postulacionService.js';
+
+async function getAllPostulaciones(req, res) {
+  try {
+    const postulaciones = await postulacionService.getAllPostulaciones();
+    res.status(200).json(postulaciones);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+async function getPostulacionById(req, res) {
+  const { id } = req.params;
+  try {
+    const postulacion = await postulacionService.getPostulacionById(Number(id));
+    if (!postulacion) {
+      return res.status(404).json({ message: 'Postulación no encontrada' });
+    }
+    res.status(200).json(postulacion);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+async function addPostulacion(req, res) {
+  const postulacion = req.body;
+  try {
+    const newPostulacion = await postulacionService.addPostulacion(postulacion);
+    res.status(201).json(newPostulacion);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+async function updatePostulacion(req, res) {
+  const { id } = req.params;
+  const updatedPostulacion = req.body;
+  try {
+    const postulacion = await postulacionService.updatePostulacion(Number(id), updatedPostulacion);
+    res.status(200).json(postulacion);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+async function deletePostulacion(req, res) {
+  const { id } = req.params;
+  try {
+    await postulacionService.deletePostulacion(Number(id));
+    res.status(204).end();
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+export default {
+  getAllPostulaciones,
+  getPostulacionById,
+  addPostulacion,
+  updatePostulacion,
+  deletePostulacion
+};
+controllers\ofertaController.js:
+import ofertaService from '../services/ofertaService.js';
+
+async function getAllOfertas(req, res) {
+  try {
+    const ofertas = await ofertaService.getAllOfertas();
+    res.status(200).json(ofertas);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+async function getOfertaById(req, res) {
+  const { id } = req.params;
+  try {
+    const oferta = await ofertaService.getOfertaById(Number(id));
+    if (!oferta) {
+      return res.status(404).json({ message: 'Oferta no encontrada' });
+    }
+    res.status(200).json(oferta);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+async function addOferta(req, res) {
+  const oferta = req.body;
+  try {
+    const newOferta = await ofertaService.addOferta(oferta);
+    res.status(201).json(newOferta);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+async function updateOferta(req, res) {
+  const { id } = req.params;
+  const updatedOferta = req.body;
+  try {
+    const oferta = await ofertaService.updateOferta(Number(id), updatedOferta);
+    res.status(200).json(oferta);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+async function deleteOferta(req, res) {
+  const { id } = req.params;
+  try {
+    await ofertaService.deleteOferta(Number(id));
+    res.status(204).end();
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+export default {
+  getAllOfertas,
+  getOfertaById,
+  addOferta,
+  updateOferta,
+  deleteOferta
+};
+controllers\enfermeroController.js:
+import enfermeroService from '../services/enfermeroService.js';
+
+async function getAllEnfermeros(req, res) {
+  try {
+    const enfermeros = await enfermeroService.getAllEnfermeros();
+    res.status(200).json(enfermeros);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+async function getEnfermeroById(req, res) {
+  const { id } = req.params;
+  try {
+    const enfermero = await enfermeroService.getEnfermeroById(Number(id));
+    if (!enfermero) {
+      return res.status(404).json({ message: 'Enfermero no encontrado' });
+    }
+    res.status(200).json(enfermero);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+async function addEnfermero(req, res) {
+  const enfermero = req.body;
+  try {
+    const newEnfermero = await enfermeroService.addEnfermero(enfermero);
+    res.status(201).json(newEnfermero);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+async function updateEnfermero(req, res) {
+  const { id } = req.params;
+  const updatedEnfermero = req.body;
+  try {
+    const enfermero = await enfermeroService.updateEnfermero(Number(id), updatedEnfermero);
+    res.status(200).json(enfermero);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+async function deleteEnfermero(req, res) {
+  const { id } = req.params;
+  try {
+    await enfermeroService.deleteEnfermero(Number(id));
+    res.status(204).end();
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+export default {
+  getAllEnfermeros,
+  getEnfermeroById,
+  addEnfermero,
+  updateEnfermero,
+  deleteEnfermero
+};
+controllers\comentarioController.js:
+import comentarioService from '../services/comentarioService.js';
+
+
+async function getAllComentarios(req, res) {
+  try {
+    const comentarios = await comentarioService.getAllComentarios();
+    res.status(200).json(comentarios);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+async function getComentarioById(req, res) {
+  const { id } = req.params;
+  try {
+    const comentario = await comentarioService.getComentarioById(Number(id));
+    if (!comentario) {
+      return res.status(404).json({ message: 'Comentario no encontrado' });
+    }
+    res.status(200).json(comentario);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+async function addComentario(req, res) {
+  const comentario = req.body;
+  try {
+    const newComentario = await comentarioService.addComentario(comentario);
+    res.status(201).json(newComentario);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+async function updateComentario(req, res) {
+  const { id } = req.params;
+  const updatedComentario = req.body;
+  try {
+    const comentario = await comentarioService.updateComentario(Number(id), updatedComentario);
+    res.status(200).json(comentario);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+async function deleteComentario(req, res) {
+  const { id } = req.params;
+  try {
+    await comentarioService.deleteComentario(Number(id));
+    res.status(204).end();
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+export default {
+  getAllComentarios,
+  getComentarioById,
+  addComentario,
+  updateComentario,
+  deleteComentario
+};
